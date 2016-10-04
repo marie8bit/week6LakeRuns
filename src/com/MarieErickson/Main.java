@@ -21,81 +21,51 @@ Cedar, 43.32
 Harriet, 44.43
 Como, 32.11
  */
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.HashMap;
 public class Main {
     static Scanner numberScanner = new Scanner(System.in);
     static Scanner stringScanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         //initiates value for variable that allows user to enter multiple entries
-        String question= "y";
+        String question = "y";
         System.out.println("Enter data for each training run");
-        //initialze 3 hashmaps to track number of runs,
-        // sum of times and shortest run times
-        HashMap<String, Double> times = new HashMap<>();
-        HashMap<String, Integer> lakes = new HashMap<>();
-        HashMap<String, Double> fast = new HashMap<>();
-        while (question.equalsIgnoreCase("y"))
-        {
+        //initialize an ArrayList or lakerun objects
+        ArrayList<LakeRuns> lakeRunsList = new ArrayList<>();
+        int x = 1;
+        while (question.equalsIgnoreCase("y")) {
             System.out.println("Enter the name of the lake");
             String lake = stringScanner.nextLine();
             System.out.println("Enter the run time");
             double time = numberScanner.nextDouble();
-            //process user data to add it to appropriate hashmaps
-            if (!times.isEmpty()){
-                //manages entering data for duplicate keys
-                if (times.containsKey(lake)){
-                    //identifies fastest time per lake
-                    if (fast.get(lake)>time){
-                        //rewrites the entry for the lake the user entered
-                        fast.put(lake, time);
+            if (lakeRunsList.isEmpty()) {
+                LakeRuns first = new LakeRuns(lake);
+                first.addRunTime(time);
+                lakeRunsList.add(first);
+            }
+            else {
+                ArrayList<LakeRuns> copy = new ArrayList<>(lakeRunsList);
+                for (LakeRuns ob : copy) {
+                    if (Objects.equals(ob.getName(), lake)) {
+                        ob.addRunTime(time);
+                    } else {
+                        LakeRuns lake1 = new LakeRuns(lake);
+                        lake1.addRunTime(time);
+                        lakeRunsList.add(lake1);
                     }
-                    //sum times per lake for average calculation
-                    time= time+times.get(lake);
-                    //count entries for each lake for average calulation
-                    int count = lakes.get(lake)+1;
-                    lakes.put(lake, count);
-                }
-                else
-                {
-                    //initiates the count for lakes integer value
-                    lakes.put(lake, 1);
-                    //adds the key/value pair in the fast hashmap/first lake entry
-                    fast.put(lake, time);
                 }
             }
-            else{
-                //initiates the count for lakes integer value
-                lakes.put(lake, 1);
-                //first user entry
-                fast.put(lake, time);
-            }
-            //adds keyvalue pair
-            times.put(lake, time);
             System.out.println("Would you like to add another run? Y for yes");
             //sets value to loop through user entry
             question = stringScanner.nextLine();
         }
-        //calls method to calculate the average for each lake
-        HashMap avg = getAverage(lakes, times);
-        //displays data to user
-        System.out.println("Average times for each lake");
-        for(Object ob : avg.keySet()){
-            System.out.println(ob +" "+ avg.get(ob));
+        for (LakeRuns lake : lakeRunsList) {
+            //calls method to calculate the average for each lake
+            //displays data to user
+            System.out.println("The fastest run time for " + lake.getName() + " was " + lake.getShortest());
         }
-        System.out.println("Fastest times for each lake");
-        for(Object ob : fast.keySet()) {
-            System.out.println(ob + " " + fast.get(ob));
-        }
-    }
-    //method to calculate average run time for each lake
-    private static HashMap<String, Double> getAverage(HashMap<String, Integer> lakes, HashMap<String, Double> times) {
-        HashMap avHash = new HashMap();
-        for (String avLake :times.keySet()){
-            double average = times.get(avLake)/lakes.get(avLake);
-            avHash.put(avLake, average);
-        }
-
-        return avHash;
     }
 }
