@@ -24,7 +24,7 @@ Como, 32.11
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.HashMap;
+
 public class Main {
     static Scanner numberScanner = new Scanner(System.in);
     static Scanner stringScanner = new Scanner(System.in);
@@ -35,7 +35,7 @@ public class Main {
         System.out.println("Enter data for each training run");
         //initialize an ArrayList or lakerun objects
         ArrayList<LakeRuns> lakeRunsList = new ArrayList<>();
-        int x = 1;
+
         while (question.equalsIgnoreCase("y")) {
             System.out.println("Enter the name of the lake");
             String lake = stringScanner.nextLine();
@@ -48,15 +48,22 @@ public class Main {
             }
             else {
                 ArrayList<LakeRuns> copy = new ArrayList<>(lakeRunsList);
-                for (LakeRuns ob : copy) {
-                    if (Objects.equals(ob.getName(), lake)) {
-                        ob.addRunTime(time);
-                    } else {
+                boolean inList = false;
+                while (!inList) {
+                    for (int x = 0; x < copy.size(); x++) {
+                        if (Objects.equals(copy.get(x).getName(), lake)) {
+                            inList = true;
+                            lakeRunsList.get(x).addRunTime(time);
+                        }
+                    }
+                    if (!inList) {
                         LakeRuns lake1 = new LakeRuns(lake);
                         lake1.addRunTime(time);
                         lakeRunsList.add(lake1);
-                    }
+                        inList = true;
+                        }
                 }
+                copy.clear();
             }
             System.out.println("Would you like to add another run? Y for yes");
             //sets value to loop through user entry
@@ -67,5 +74,7 @@ public class Main {
             //displays data to user
             System.out.println("The fastest run time for " + lake.getName() + " was " + lake.getShortest());
         }
+        numberScanner.close();
+        stringScanner.close();
     }
 }
